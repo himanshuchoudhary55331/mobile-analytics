@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% set active = "dashboard" %}
+{% block title %}Dashboard — Mobile Analytics{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+
+<div class="filter-bar">
+  <div class="filter-group">
+    <label>Period</label>
+    <div class="btn-group" id="period-filter">
+      <button class="btn-filter active" data-days="7">7 Days</button>
+      <button class="btn-filter" data-days="30">30 Days</button>
+      <button class="btn-filter" data-days="90">90 Days</button>
+    </div>
+  </div>
+  <div class="filter-group">
+    <label>Custom range</label>
+    <input type="date" id="f-start" class="input-sm"/>
+    <input type="date" id="f-end"   class="input-sm"/>
+    <button class="btn-primary btn-sm" id="apply-dates">Apply</button>
+  </div>
+</div>
+
+<!-- Summary cards -->
+<div class="cards-grid">
+  <div class="card stat-card skeleton">
+    <div class="stat-icon icon-calls">📞</div>
+    <div><div class="stat-value" id="v-calls">—</div><div class="stat-label">Total Calls</div></div>
+  </div>
+  <div class="card stat-card skeleton">
+    <div class="stat-icon icon-duration">⏱️</div>
+    <div><div class="stat-value" id="v-duration">—</div><div class="stat-label">Call Duration</div></div>
+  </div>
+  <div class="card stat-card skeleton">
+    <div class="stat-icon icon-sms">💬</div>
+    <div><div class="stat-value" id="v-sms">—</div><div class="stat-label">SMS Messages</div></div>
+  </div>
+  <div class="card stat-card skeleton">
+    <div class="stat-icon icon-data">📶</div>
+    <div><div class="stat-value" id="v-data">—</div><div class="stat-label">Data Used</div></div>
+  </div>
+  <div class="card stat-card skeleton">
+    <div class="stat-icon icon-avg">📊</div>
+    <div><div class="stat-value" id="v-avg">—</div><div class="stat-label">Avg Daily Calls</div></div>
+  </div>
+  <div class="card stat-card skeleton">
+    <div class="stat-icon icon-peak">🔥</div>
+    <div><div class="stat-value" id="v-peak">—</div><div class="stat-label">Peak Hour</div></div>
+  </div>
+  <div class="card stat-card skeleton">
+    <div class="stat-icon icon-missed">📵</div>
+    <div><div class="stat-value" id="v-missed">—</div><div class="stat-label">Missed Calls</div></div>
+  </div>
+  <div class="card stat-card skeleton">
+    <div class="stat-icon icon-day">📅</div>
+    <div><div class="stat-value" id="v-active-day">—</div><div class="stat-label">Most Active Day</div></div>
+  </div>
+</div>
+
+<!-- Charts row 1 -->
+<div class="charts-row">
+  <div class="card chart-card wide">
+    <div class="card-header"><h3>Daily Activity Trend</h3></div>
+    <div class="chart-wrap"><canvas id="chart-trend"></canvas></div>
+  </div>
+  <div class="card chart-card">
+    <div class="card-header"><h3>Call Breakdown</h3></div>
+    <div class="chart-wrap chart-sm"><canvas id="chart-breakdown"></canvas></div>
+  </div>
+</div>
+
+<!-- Charts row 2 -->
+<div class="charts-row">
+  <div class="card chart-card">
+    <div class="card-header"><h3>Hourly Pattern</h3></div>
+    <div class="chart-wrap"><canvas id="chart-hourly"></canvas></div>
+  </div>
+  <div class="card chart-card">
+    <div class="card-header"><h3>Weekly Distribution</h3></div>
+    <div class="chart-wrap"><canvas id="chart-weekday"></canvas></div>
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}<script src="/static/js/dashboard.js"></script>{% endblock %}

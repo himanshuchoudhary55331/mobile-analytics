@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Mobile Analytics{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/style.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ═══ Sidebar ═══ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <span class="brand-icon">📱</span>
+    <span class="brand-name">MobileAnalytics</span>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="/"              class="nav-item {% if active=='dashboard' %}active{% endif %}"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+    <a href="/calls"         class="nav-item {% if active=='calls'     %}active{% endif %}"><span class="nav-icon">📞</span><span>Calls</span></a>
+    <a href="/sms"           class="nav-item {% if active=='sms'       %}active{% endif %}"><span class="nav-icon">💬</span><span>SMS</span></a>
+    <a href="/data-usage"    class="nav-item {% if active=='data'      %}active{% endif %}"><span class="nav-icon">📶</span><span>Data Usage</span></a>
+    <a href="/time-patterns" class="nav-item {% if active=='time'      %}active{% endif %}"><span class="nav-icon">🕐</span><span>Time Patterns</span></a>
+    <a href="/records"       class="nav-item {% if active=='records'   %}active{% endif %}"><span class="nav-icon">🗄️</span><span>Records</span></a>
+    <a href="/import"        class="nav-item {% if active=='import'    %}active{% endif %}"><span class="nav-icon">📤</span><span>Import Data</span></a>
+  </nav>
+  <div class="sidebar-footer">
+    <button id="reseed-btn" class="btn-reseed" title="Regenerate all sample data">↺ Re-seed Data</button>
+  </div>
+</aside>
+
+<!-- ═══ Main wrapper ═══ -->
+<div class="main-wrapper">
+  <header class="topnav">
+    <button class="hamburger" id="hamburger">☰</button>
+    <span class="topnav-title">{% block page_title %}Dashboard{% endblock %}</span>
+    <button id="theme-toggle" class="btn-icon" title="Toggle dark/light">🌙</button>
+  </header>
+  <main class="page-content">
+    {% block content %}{% endblock %}
+  </main>
+</div>
+
+<div class="sidebar-overlay" id="overlay"></div>
+<div id="toast" class="toast"></div>
+
+<script src="/static/js/main.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

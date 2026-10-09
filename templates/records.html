@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% set active = "records" %}
+{% block title %}Records — Mobile Analytics{% endblock %}
+{% block page_title %}Data Records{% endblock %}
+{% block content %}
+
+<div class="filter-bar">
+  <div class="filter-group">
+    <label>Table</label>
+    <div class="btn-group" id="rec-tbl-filter">
+      <button class="btn-filter active" data-table="calls">Calls</button>
+      <button class="btn-filter" data-table="sms">SMS</button>
+      <button class="btn-filter" data-table="data_usage">Data</button>
+    </div>
+  </div>
+  <div class="filter-group">
+    <input type="date" id="r-start" class="input-sm"/>
+    <input type="date" id="r-end"   class="input-sm"/>
+    <button class="btn-primary btn-sm" id="r-apply">Apply</button>
+    <button class="btn-secondary btn-sm" id="r-export">⬇ Export CSV</button>
+  </div>
+</div>
+
+<div class="search-wrap">
+  <input type="search" id="rec-search" class="input-full" placeholder="Search in any field…"/>
+</div>
+
+<div class="card table-card">
+  <div class="card-header">
+    <h3 id="rec-title">Call Records</h3>
+    <span id="rec-count" class="muted"></span>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead id="rec-thead"></thead>
+      <tbody id="rec-tbody"><tr><td class="loading-row">Loading…</td></tr></tbody>
+    </table>
+  </div>
+  <div class="pagination" id="rec-pager"></div>
+</div>
+
+{% endblock %}
+{% block scripts %}<script src="/static/js/records.js"></script>{% endblock %}

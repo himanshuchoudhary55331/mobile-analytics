@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% set active = "import" %}
+{% block title %}Import Data — Mobile Analytics{% endblock %}
+{% block page_title %}Import Real Data{% endblock %}
+{% block content %}
+
+<!-- Info banner -->
+<div class="import-banner">
+  <div class="banner-icon">📲</div>
+  <div>
+    <strong>Upload your real phone data</strong>
+    <p>Export call logs, SMS, or data usage from your phone as CSV and upload below.
+       Your data stays on your local machine — nothing is sent anywhere external.</p>
+  </div>
+</div>
+
+<!-- How-to guide cards -->
+<div class="cards-grid three-col" style="margin-bottom:1.4rem">
+
+  <div class="card guide-card">
+    <div class="guide-icon">📞</div>
+    <h3>Call Logs</h3>
+    <p><strong>Android:</strong> Install <em>Call Log Backup &amp; Restore</em> from Play Store → Export → CSV.</p>
+    <p class="muted" style="margin-top:.5rem">Required columns: <code>call_type</code>, <code>phone_number</code>, <code>call_datetime</code></p>
+    <p class="muted">call_type values: <code>incoming</code> / <code>outgoing</code> / <code>missed</code></p>
+    <a class="btn-download" href="/api/import/template/calls">⬇ Download Template</a>
+  </div>
+
+  <div class="card guide-card">
+    <div class="guide-icon">💬</div>
+    <h3>SMS Log</h3>
+    <p><strong>Android:</strong> Install <em>SMS Backup &amp; Restore</em> from Play Store → Export → CSV.</p>
+    <p class="muted" style="margin-top:.5rem">Required columns: <code>sms_type</code>, <code>phone_number</code>, <code>sms_datetime</code></p>
+    <p class="muted">sms_type values: <code>sent</code> / <code>received</code></p>
+    <a class="btn-download" href="/api/import/template/sms">⬇ Download Template</a>
+  </div>
+
+  <div class="card guide-card">
+    <div class="guide-icon">📶</div>
+    <h3>Data Usage</h3>
+    <p><strong>Android:</strong> Settings → Network → Data Usage → Export (varies by device/brand).</p>
+    <p class="muted" style="margin-top:.5rem">Required columns: <code>app_name</code>, <code>usage_date</code>, <code>download_mb</code></p>
+    <p class="muted">upload_mb is optional</p>
+    <a class="btn-download" href="/api/import/template/data">⬇ Download Template</a>
+  </div>
+
+</div>
+
+<!-- Upload panels -->
+<div class="charts-row">
+
+  <!-- Calls upload -->
+  <div class="card upload-card">
+    <div class="card-header"><h3>📞 Upload Call Log CSV</h3></div>
+    <div class="upload-body">
+      <div class="drop-zone" id="dz-calls">
+        <div class="dz-icon">📁</div>
+        <p>Drag &amp; drop CSV here<br/><span class="muted">or click to browse</span></p>
+        <input type="file" id="file-calls" accept=".csv" hidden/>
+      </div>
+      <div id="file-name-calls" class="file-name-display"></div>
+      <label class="checkbox-label">
+        <input type="checkbox" id="replace-calls"/>
+        Replace all existing call records
+      </label>
+      <button class="btn-primary btn-upload" id="btn-upload-calls" disabled>Upload Calls CSV</button>
+      <div class="upload-result" id="result-calls"></div>
+    </div>
+  </div>
+
+  <!-- SMS upload -->
+  <div class="card upload-card">
+    <div class="card-header"><h3>💬 Upload SMS Log CSV</h3></div>
+    <div class="upload-body">
+      <div class="drop-zone" id="dz-sms">
+        <div class="dz-icon">📁</div>
+        <p>Drag &amp; drop CSV here<br/><span class="muted">or click to browse</span></p>
+        <input type="file" id="file-sms" accept=".csv" hidden/>
+      </div>
+      <div id="file-name-sms" class="file-name-display"></div>
+      <label class="checkbox-label">
+        <input type="checkbox" id="replace-sms"/>
+        Replace all existing SMS records
+      </label>
+      <button class="btn-primary btn-upload" id="btn-upload-sms" disabled>Upload SMS CSV</button>
+      <div class="upload-result" id="result-sms"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="charts-row">
+
+  <!-- Data usage upload -->
+  <div class="card upload-card">
+    <div class="card-header"><h3>📶 Upload Data Usage CSV</h3></div>
+    <div class="upload-body">
+      <div class="drop-zone" id="dz-data">
+        <div class="dz-icon">📁</div>
+        <p>Drag &amp; drop CSV here<br/><span class="muted">or click to browse</span></p>
+        <input type="file" id="file-data" accept=".csv" hidden/>
+      </div>
+      <div id="file-name-data" class="file-name-display"></div>
+      <label class="checkbox-label">
+        <input type="checkbox" id="replace-data"/>
+        Replace all existing data usage records
+      </label>
+      <button class="btn-primary btn-upload" id="btn-upload-data" disabled>Upload Data CSV</button>
+      <div class="upload-result" id="result-data"></div>
+    </div>
+  </div>
+
+  <!-- Import history -->
+  <div class="card upload-card">
+    <div class="card-header"><h3>📋 Import History</h3></div>
+    <div style="overflow-x:auto">
+      <table class="data-table">
+        <thead><tr><th>Time</th><th>Type</th><th>File</th><th>Imported</th><th>Failed</th><th>Mode</th></tr></thead>
+        <tbody id="import-history-tbody">
+          <tr><td colspan="6" class="loading-row">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- Column reference -->
+<div class="card" style="margin-bottom:1.4rem">
+  <div class="card-header"><h3>📖 Flexible Column Name Matching</h3></div>
+  <div class="col-ref-grid">
+
+    <div>
+      <h4 style="margin-bottom:.6rem;font-size:.88rem;color:var(--muted)">Calls CSV</h4>
+      <table class="data-table">
+        <thead><tr><th>Field</th><th>Also accepted as…</th><th>Required</th></tr></thead>
+        <tbody>
+          <tr><td>call_type</td><td>type, direction, calltype</td><td>✅</td></tr>
+          <tr><td>phone_number</td><td>phone, number, tel, from, to</td><td>✅</td></tr>
+          <tr><td>call_datetime</td><td>datetime, date, timestamp, time</td><td>✅</td></tr>
+          <tr><td>contact_name</td><td>contact, name</td><td>optional</td></tr>
+          <tr><td>duration_sec</td><td>duration, seconds, secs</td><td>optional</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <h4 style="margin-bottom:.6rem;font-size:.88rem;color:var(--muted)">SMS CSV</h4>
+      <table class="data-table">
+        <thead><tr><th>Field</th><th>Also accepted as…</th><th>Required</th></tr></thead>
+        <tbody>
+          <tr><td>sms_type</td><td>type, direction</td><td>✅</td></tr>
+          <tr><td>phone_number</td><td>phone, number, address, from, to</td><td>✅</td></tr>
+          <tr><td>sms_datetime</td><td>datetime, date, timestamp, time</td><td>✅</td></tr>
+          <tr><td>contact_name</td><td>contact, name</td><td>optional</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <h4 style="margin-bottom:.6rem;font-size:.88rem;color:var(--muted)">Data Usage CSV</h4>
+      <table class="data-table">
+        <thead><tr><th>Field</th><th>Also accepted as…</th><th>Required</th></tr></thead>
+        <tbody>
+          <tr><td>app_name</td><td>app, application, package</td><td>✅</td></tr>
+          <tr><td>usage_date</td><td>date, day</td><td>✅</td></tr>
+          <tr><td>download_mb</td><td>download, rx_mb, received_mb</td><td>✅</td></tr>
+          <tr><td>upload_mb</td><td>upload, tx_mb, sent_mb</td><td>optional</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}<script src="/static/js/import.js"></script>{% endblock %}
